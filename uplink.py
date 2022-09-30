@@ -33,6 +33,7 @@ because I noticed Meraki (or my internet access?) disconnected the session while
 So I moved all the line of code into a function that managed some basic, HTTP/connection errors and retries the web request 3 times.
 After that it returns an empty json array.
 - to some fields and their formats (refs.: ['name'] and str() function)
+- added firmware and geolocation, to better identify each device
 '''
 
 import csv
@@ -103,7 +104,7 @@ if __name__ == '__main__':
   # Output CSV of appliances' info
   today = datetime.date.today()
   csv_file1 = open(name + ' appliances - ' + str(today) + '.csv', 'w', encoding='utf-8')
-  fieldnames = ['TimeZone', 'Network', 'Device', 'Serial', 'MAC', 'Model', 'WAN1 Status', 'WAN1 IP', 'WAN1 Gateway', 'WAN1 Public IP', 'WAN1 DNS', 'WAN1 Static', 'WAN2 Status', 'WAN2 IP', 'WAN2 Gateway', 'WAN2 Public IP', 'WAN2 DNS', 'WAN2 Static', 'Cellular Status', 'Cellular IP', 'Cellular Provider', 'Cellular Public IP', 'Cellular Model', 'Cellular Connection', 'Performance']
+  fieldnames = ['TimeZone', 'Network', 'Device', 'Serial', 'MAC', 'Model', 'firmware', 'geolocation', 'WAN1 Status', 'WAN1 IP', 'WAN1 Gateway', 'WAN1 Public IP', 'WAN1 DNS', 'WAN1 Static', 'WAN2 Status', 'WAN2 IP', 'WAN2 Gateway', 'WAN2 Public IP', 'WAN2 DNS', 'WAN2 Static', 'Cellular Status', 'Cellular IP', 'Cellular Provider', 'Cellular Public IP', 'Cellular Model', 'Cellular Connection', 'Performance']
   writer = csv.DictWriter(csv_file1, fieldnames=fieldnames, restval='', dialect=csvquoting)
   writer.writeheader()
 
@@ -147,6 +148,8 @@ if __name__ == '__main__':
       , 'Serial': appliance['serial']
       , 'MAC': appliance['mac']
       , 'Model': appliance['model']
+      , 'firmware': device_info['firmware']
+      , 'geolocation': "https://www.google.com/maps/@" + str(device_info['lat']) + "," + str(device_info['lng']) + ",15z"
       , 'WAN1 Status': uplinks_info['WAN1']['status']
       , 'WAN1 IP': uplinks_info['WAN1']['ip']
       , 'WAN1 Gateway': uplinks_info['WAN1']['gateway']
